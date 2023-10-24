@@ -3,11 +3,16 @@ from board import Board
 from ship import Ship
 from player import Player
 from input import coord_to_coord
+from collections import deque
 
 class Ai(Player):
     def __init__(self, name):
         super().__init__(name)
         self.place_ships()
+        self.ships_destroyed = []
+        self.shots = deque()
+        self.queue_shots = deque()
+        self.queue_shots_set = set()
 
     def place_ships(self):
         self.ship_locations = {}
@@ -64,14 +69,55 @@ class Ai(Player):
         return (randint(0, 9), randint(0, 9))
     
     def input_coord(self):
-        while True:
-            coord = self.choose_random_coord()
-            if self.board.check(coord):
-                return coord, [coord_to_coord(coord)]
+        if len(self.shots) == 0 and len(self.queue_shots) == 0:
+        # if True:
+            while True:
+                coord = self.choose_random_coord()
+                if self.board.check(coord):
+                    return coord, [coord_to_coord(coord)]
+        else:
+            if(len(self.shots) == 0):
+                self.shots.extend(self.queue_shots.popleft())
+            coord = self.shots.popleft()
+            return coord, [coord_to_coord(coord)]
+            
+        
 
     def update_board(self, coord, hit):
         super().update_board(coord, hit)
 
         if hit:
-            print("HIT!")
+            y, x = coord
 
+            if coord not in self.queue_shots_set:
+                shots1 = []
+                shots2 = []
+                shots3 = []
+                shots4 = []
+                for i in range (1, 5):
+                    north = (y - i, x)
+                    south = (y + i, x)
+                    east = (y, x + i)
+                    west = (y, x - i)
+                    if self.board.check(north):
+                        self.queue_shots_set.add(north)
+                        shots1.append(north)
+                    if self.board.check(south):
+                        self.queue_shots_set.add(south)
+                        shots2.append(south)
+                    if self.board.check(east):
+                        self.queue_shots_set.add(east)
+                        shots3.append(east)
+                    if self.board.check(west):
+                        self.queue_shots_set.add(west)
+                        shots4.append(west)
+
+                print('nsew', shots1, shots2, shots3, shots4)
+                if len(shots1) != 0:
+                    self.queue_shots.append(shots1)
+                if len(shots2) != 0:
+                    self.queue_shots.append(shots2)
+                if len(shots3) != 0:
+                    self.queue_shots.append(shots3)
+                if len(shots4) != 0:
+                    self.queue_shots.append(shots4)

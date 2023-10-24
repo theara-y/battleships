@@ -18,7 +18,7 @@ def get_input(player):
 
 
 players = [
-    Player("Player 1"),
+    Ai("Player 1"),
     Ai("AI")
 ]
 

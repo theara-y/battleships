@@ -8,7 +8,8 @@ class Board:
         self.checked.add(coord)
 
     def check(self, coord):
-        if coord in self.checked:
+        y, x = coord
+        if coord in self.checked or y > 9 or x > 9 or y < 0 or x < 0:
             return False
         return True
     
