@@ -7,16 +7,6 @@ auto = False
 if len(sys.argv) > 1 and sys.argv[1] == '--auto':
     auto = True
 
-def get_input(player):
-    if auto:
-        coord = player.choose_random_coord()
-        valid = player.board.check(coord)
-        return coord, valid, []
-    else:
-        coord, flash = player.input_coord()
-        return coord, True, flash
-
-
 players = [
     Ai("Player 1"),
     Ai("AI")
@@ -35,9 +25,10 @@ while not game_over:
         coord, messages = attacking_player.input_coord()
         flash.extend(messages)
         if coord:
-            game_over, hit, messages = defending_player.receive(coord)
-            flash.extend(messages)
-            attacking_player.update_board(coord, hit)
+            response = defending_player.receive(coord)
+            game_over = response['game_over']
+            flash.extend(response['messages'])
+            attacking_player.update_board(coord, response)
             attacking_player.render_board(flash)
             if not auto:
                 input("Press Enter to end turn.")

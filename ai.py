@@ -9,7 +9,14 @@ class Ai(Player):
     def __init__(self, name):
         super().__init__(name)
         self.place_ships()
-        self.ships_destroyed = []
+        self.max_size = 5
+        self.enemy_ships_remaining = {
+            'carrier': Ship('0', 'carrier', 5),
+            'battleship': Ship('1', 'battleship', 4),
+            'cruiser': Ship('2', 'cruiser', 3),
+            'submarine': Ship('3', 'submarine', 3),
+            'destroyer': Ship('4', 'destroyer', 2)
+        }
         self.shots = deque()
         self.queue_shots = deque()
         self.queue_shots_set = set()
@@ -81,19 +88,26 @@ class Ai(Player):
             coord = self.shots.popleft()
             return coord, [coord_to_coord(coord)]
             
-        
+    def get_largest_enemy_ship(self):
+        largest = 0
+        for ship in self.enemy_ships_remaining.values():
+            largest = max(largest, ship.size)
+        return largest
 
-    def update_board(self, coord, hit):
-        super().update_board(coord, hit)
+    def update_board(self, coord, response):
+        super().update_board(coord, response)
 
-        if hit:
+        if response['hit']:
+            if response['destroyed'] != None:
+                del self.enemy_ships_remaining[response['destroyed']]
+                self.max_size = self.get_largest_enemy_ship()
             if coord not in self.queue_shots_set:
                 y, x = coord
                 shots1 = []
                 shots2 = []
                 shots3 = []
                 shots4 = []
-                for i in range (1, 5):
+                for i in range (1, self.max_size):
                     north = (y - i, x)
                     south = (y + i, x)
                     east = (y, x + i)
