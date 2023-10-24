@@ -1,4 +1,5 @@
 from ai import Ai
+from player import Player
 import time
 import sys
 
@@ -17,7 +18,7 @@ def get_input(player):
 
 
 players = [
-    Ai("Player 1"),
+    Player("Player 1"),
     Ai("AI")
 ]
 
@@ -31,14 +32,15 @@ while not game_over:
     flash = []
     while True:
         attacking_player.render_board(flash)
-        coord, valid, flash = get_input(attacking_player)
-        if coord and valid:
-            game_over, hit, flash = defending_player.receive(coord)
+        coord, messages = attacking_player.input_coord()
+        flash.extend(messages)
+        if coord:
+            game_over, hit, messages = defending_player.receive(coord)
+            flash.extend(messages)
             attacking_player.update_board(coord, hit)
             attacking_player.render_board(flash)
             if not auto:
                 input("Press Enter to end turn.")
-            # time.sleep(1)
             break
 
     if not game_over:

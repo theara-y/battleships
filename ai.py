@@ -2,6 +2,7 @@ from random import randint, choice
 from board import Board
 from ship import Ship
 from player import Player
+from input import coord_to_coord
 
 class Ai(Player):
     def __init__(self, name):
@@ -61,3 +62,16 @@ class Ai(Player):
 
     def choose_random_coord(self):
         return (randint(0, 9), randint(0, 9))
+    
+    def input_coord(self):
+        while True:
+            coord = self.choose_random_coord()
+            if self.board.check(coord):
+                return coord, [coord_to_coord(coord)]
+
+    def update_board(self, coord, hit):
+        super().update_board(coord, hit)
+
+        if hit:
+            print("HIT!")
+

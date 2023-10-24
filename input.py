@@ -24,3 +24,7 @@ def parseInput(s):
     y = int(number) - 1
     x = ord(letter) - ord('A')
     return (y, x)
+
+def coord_to_coord(coord):
+    y, x = coord
+    return chr(ord('A') + x) + str(y + 1)
