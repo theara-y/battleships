@@ -87,9 +87,8 @@ class Ai(Player):
         super().update_board(coord, hit)
 
         if hit:
-            y, x = coord
-
             if coord not in self.queue_shots_set:
+                y, x = coord
                 shots1 = []
                 shots2 = []
                 shots3 = []
@@ -112,7 +111,6 @@ class Ai(Player):
                         self.queue_shots_set.add(west)
                         shots4.append(west)
 
-                print('nsew', shots1, shots2, shots3, shots4)
                 if len(shots1) != 0:
                     self.queue_shots.append(shots1)
                 if len(shots2) != 0:
@@ -121,3 +119,12 @@ class Ai(Player):
                     self.queue_shots.append(shots3)
                 if len(shots4) != 0:
                     self.queue_shots.append(shots4)
+            else:
+                self.queue_shots_set.remove(coord)
+        else:
+            if coord in self.queue_shots_set:
+                if len(self.shots) != 0:
+                    self.shots.clear()
+
+
+
